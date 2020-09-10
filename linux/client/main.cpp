@@ -9,7 +9,7 @@ int main()
 {
     UdpLinux client(Udp::UdpClient);
     client.socket();
-    client.write((unsigned char *)"Kral geri dondu.\n",strlen("Kral geri dondu.\n"));
+    client.write((unsigned char *)"Hello from Client!",strlen("Hello from Client!"));
     while(true){
         client.read((unsigned char*)recv_buf);
         cout << recv_buf << endl;
