@@ -1,4 +1,5 @@
 
+#if defined __linux__ || defined __APPLE__
 
 #ifndef TCPIPSERVER__
 #define TCPIPSERVER__ 
@@ -23,5 +24,7 @@ private:
     struct sockaddr_in m_serv_addr, m_cli_addr;
 
 };
+
+#endif
 
 #endif

@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #pragma once
 #include "udp.h"
 #include "winsock2.h"
@@ -27,3 +28,4 @@ public:
 	virtual int close();
 };
 
+#endif

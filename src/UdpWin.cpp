@@ -1,4 +1,5 @@
-#include "pch.h"
+
+#ifdef _WIN32
 #include "UdpWin.h"
 
 #undef UNICODE
@@ -100,3 +101,4 @@ int UdpWin::close() {
 	return closesocket(serverSocket);
 }
 
+#endif

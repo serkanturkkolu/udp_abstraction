@@ -1,4 +1,4 @@
-
+#if defined __linux__ || defined __APPLE__
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -76,3 +76,4 @@ int UdpLinux::close() {
 	return ::close(m_sockfd);
 }
 
+#endif
