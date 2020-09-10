@@ -1,7 +1,7 @@
 
 #include <cstring>
 #include <string>
-#include "/Users/serkan/Documents/udp_abstraction/include/udp.h"
+#include "udp.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -105,7 +105,7 @@ int Udp::bind(){
 
 int Udp::close() {
 #ifdef _WIN32
-    closesocket(serverSocket);
+    return closesocket(m_sockfd);
 #elif defined __linux__ || defined __APPLE__
     return ::close(m_sockfd);
 #endif
