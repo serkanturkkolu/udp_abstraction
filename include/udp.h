@@ -1,9 +1,15 @@
 
-#if defined __linux__ || defined __APPLE__
-
 #ifndef TCPIPSERVER__
 #define TCPIPSERVER__ 
+
+#if defined __linux__ || defined __APPLE__
+
 #include <netinet/in.h>
+#elif _WIN32
+#pragma once
+#include "winsock2.h"
+#endif
+
 #include <vector> 
 #include <string> 
 #include "iudp.h"
@@ -43,4 +49,3 @@ private:
 
 #endif
 
-#endif
