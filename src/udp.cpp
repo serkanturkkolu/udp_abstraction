@@ -1,15 +1,37 @@
-#if defined __linux__ || defined __APPLE__
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+
 #include <cstring>
 #include <string>
-#include <arpa/inet.h>
-#include "udpposix.h"
+#include "/Users/serkan/Documents/udp_abstraction/include/udp.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 
-int UdpLinux::write(const unsigned char sending_data[],size_t len){
+
+#ifdef _WIN32
+
+    #undef UNICODE
+
+    #define WIN32_LEAN_AND_MEAN
+
+    #include <windows.h>
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+
+    // Need to link with Ws2_32.lib
+    #pragma comment (lib, "Ws2_32.lib")
+    // #pragma comment (lib, "Mswsock.lib")
+#elif defined __linux__ || defined __APPLE__
+
+    #include <arpa/inet.h>
+    #include <unistd.h>
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+
+#endif
+
+
+int Udp::write(const unsigned char sending_data[],size_t len){
     if(type == UdpServer){
         return sendto(m_sockfd, (const char *)sending_data, len,  0, (const struct sockaddr *) &m_cli_addr, m_clilen); // MSG_CONFIRM for 0
     }
@@ -19,7 +41,7 @@ int UdpLinux::write(const unsigned char sending_data[],size_t len){
 
 }
 
-int UdpLinux::read(unsigned char *read_data){
+int Udp::read(unsigned char *read_data){
     if(type == UdpServer){
         return recvfrom(m_sockfd, (char *)read_data, MAX_BUFFER_SIZE, 0, (struct sockaddr *) &m_cli_addr, &m_clilen); //MSG_WAITALL for 0;
     }
@@ -29,13 +51,22 @@ int UdpLinux::read(unsigned char *read_data){
 
 }
 
-int UdpLinux::socket(int port){
+int Udp::socket(int port){
  
     sock_port_no =port;
     return socket();
 }
 
-int UdpLinux::socket(){
+int Udp::socket(){
+
+#ifdef _WIN32
+    WORD version = MAKEWORD(2, 2);
+    int res = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (res != NO_ERROR) {
+        printf("WSAStartup failed with error %d\n", res);
+        return 1;
+    }
+#endif
 
     if ( (m_sockfd = ::socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
         perror("socket creation failed");
@@ -58,7 +89,7 @@ int UdpLinux::socket(){
     return 0;
 }
 
-int UdpLinux::bind(){
+int Udp::bind(){
     // Bind the socket with the server address
     if ( ::bind(m_sockfd, (const struct sockaddr *)&m_serv_addr, sizeof(m_serv_addr)) < 0 )
     {
@@ -72,8 +103,12 @@ int UdpLinux::bind(){
 }
 
 
-int UdpLinux::close() {
-	return ::close(m_sockfd);
+int Udp::close() {
+#ifdef _WIN32
+    closesocket(serverSocket);
+#elif defined __linux__ || defined __APPLE__
+    return ::close(m_sockfd);
+#endif
+
 }
 
-#endif

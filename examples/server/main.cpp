@@ -1,10 +1,12 @@
 #include <iostream>
 #include  <cstddef>
 #include "udpposix.h"
-#include <unistd.h>
+#include <chrono>
 #include <cstring>
 
 using namespace std;
+using namespace std::chrono_literals;
+
 char recv_buf[1024];
 
 int main()
@@ -16,7 +18,7 @@ int main()
     cout << "Receive data: " << recv_buf << endl;
     memset(recv_buf,0,recv_size);
     while(true){
-        sleep(1);
+        chrono::sleep_for(1s);
         server.write((unsigned char *)"Hello from Server!",strlen("Hello from Server!"));
     }
 
