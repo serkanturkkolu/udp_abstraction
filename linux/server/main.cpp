@@ -17,7 +17,7 @@ int main()
     memset(recv_buf,0,recv_size);
     while(true){
         sleep(1);
-        server.write((unsigned char *)"Hello from Server!\n",strlen("Hello from Server!\n"));
+        server.write((unsigned char *)"Hello from Server!",strlen("Hello from Server!"));
     }
 
     return 0;
