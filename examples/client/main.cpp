@@ -1,13 +1,13 @@
 #include <iostream>
-#include "udpposix.h"
-#include <unistd.h>
+#include "udp.h"
 #include <cstring>
 
 using namespace std;
+
 char recv_buf[1024];
 int main()
 {
-    UdpLinux client(Udp::UdpClient);
+    Udp client(Udp::UdpClient);
     client.socket();
     client.write((unsigned char *)"Hello from Client!",strlen("Hello from Client!"));
     while(true){
