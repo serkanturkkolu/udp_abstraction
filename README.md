@@ -11,6 +11,8 @@ So you got server and client files in main directory. You can run these files an
 
 You can add main.cpp in win/server or win/client to your windows project and you must add src/UdpWin.cpp , include/udp.h and /include/UdpWin.h to your project.
 
-You can use mingw or MSVC .
+You can use MSVC .
+
+If you will use Mingw , you install Mingw-w64 with posix thread , i686 , dwarf (recommended ver 8.1.0) .
 
 
