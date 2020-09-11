@@ -16,10 +16,12 @@
     #include <windows.h>
     #include <winsock2.h>
     #include <ws2tcpip.h>
-
+#ifdef _MSC_VER
     // Need to link with Ws2_32.lib
-    #pragma comment (lib, "Ws2_32.lib")
+	#pragma comment (lib, "Ws2_32.lib")
     // #pragma comment (lib, "Mswsock.lib")
+#endif
+	
 #elif defined __linux__ || defined __APPLE__
 
     #include <arpa/inet.h>
@@ -84,7 +86,11 @@ int Udp::socket(){
 		m_serv_addr.sin_addr.s_addr = INADDR_ANY;
 	}
 	else {
+#ifdef __MINGW32__
+		m_serv_addr.sin_addr.s_addr = INADDR_ANY;
+#else
 		inet_pton(AF_INET, serverAddress, &m_serv_addr.sin_addr);
+#endif
 	}
     return 0;
 }
