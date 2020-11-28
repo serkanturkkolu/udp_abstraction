@@ -36,9 +36,11 @@ private:
     struct sockaddr_in m_serv_addr, m_cli_addr;
 #endif
 public:
-    Udp(IUdp::Type t):IUdp(t){}
+    Udp(IUdp::Type t, const char *address = DEFAULT_ADDRESS, int port=DEFAULT_PORT,bool blocking=false):IUdp(t,address,port,blocking){}
     virtual int write(const unsigned char sending_data[],size_t len);
     virtual int read(unsigned char *);
+    virtual void set_blocking_read(bool);
+    virtual int set_blocking_time_ms(uint32_t);
     virtual int socket(int);
     virtual int socket();
     virtual int bind();

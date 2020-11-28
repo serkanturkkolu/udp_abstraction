@@ -34,8 +34,8 @@
 
 
 int Udp::write(const unsigned char sending_data[],size_t len){
-    if(type == UdpServer){
-        return sendto(m_sockfd, (const char *)sending_data, len,  0, (const struct sockaddr *) &m_cli_addr, m_clilen); // MSG_CONFIRM for 0
+    if(m_type == Receiver){
+        return -1;//no write for receiver udp port
     }
     else{
         return sendto(m_sockfd, (const char *)sending_data, len,  0, (const struct sockaddr *) &m_serv_addr, sizeof(m_serv_addr)); // MSG_CONFIRM for 0
@@ -44,18 +44,35 @@ int Udp::write(const unsigned char sending_data[],size_t len){
 }
 
 int Udp::read(unsigned char *read_data){
-    if(type == UdpServer){
+    if(m_type == Receiver){
         return recvfrom(m_sockfd, (char *)read_data, MAX_BUFFER_SIZE, 0, (struct sockaddr *) &m_cli_addr, &m_clilen); //MSG_WAITALL for 0;
     }
     else{
-        return recvfrom(m_sockfd, (char *)read_data, MAX_BUFFER_SIZE, 0, (struct sockaddr *) &m_serv_addr, &m_clilen); //MSG_WAITALL for 0;
+        return -1;//no read for sender udp port
     }
 
 }
 
+void Udp::set_blocking_read(bool blocking){
+    m_blocking = blocking;
+}
+
+int Udp::set_blocking_time_ms(uint32_t ms){
+    m_timeout_read_blocking = ms;
+    if(m_blocking == true){
+        struct timeval read_timeout;
+        uint32_t sec = m_timeout_read_blocking / 1000;
+        uint32_t usec = (m_timeout_read_blocking % 1000) * 1000;
+        read_timeout.tv_sec = sec; 
+        read_timeout.tv_usec = usec;
+        return setsockopt(m_sockfd, SOL_SOCKET, SO_RCVTIMEO, &read_timeout, sizeof read_timeout);
+    }
+    return -1;
+}
+
 int Udp::socket(int port){
  
-    sock_port_no =port;
+    m_sock_port_no = port;
     return socket();
 }
 
@@ -81,17 +98,27 @@ int Udp::socket(){
 
  
     m_serv_addr.sin_family = AF_INET;
-    m_serv_addr.sin_port = htons(sock_port_no);
-	if (type == Udp::UdpServer) {
+    m_serv_addr.sin_port = htons(m_sock_port_no);
+	if (m_type == Receiver) {
 		m_serv_addr.sin_addr.s_addr = INADDR_ANY;
 	}
 	else {
 #ifdef __MINGW32__
 		m_serv_addr.sin_addr.s_addr = INADDR_ANY;
 #else
-		inet_pton(AF_INET, serverAddress, &m_serv_addr.sin_addr);
+		inet_pton(AF_INET, m_server_address, &m_serv_addr.sin_addr);
 #endif
 	}
+
+    //nonblocking
+    if(m_blocking == true){
+        struct timeval read_timeout;
+        uint32_t sec = m_timeout_read_blocking / 1000;
+        uint32_t usec = (m_timeout_read_blocking % 1000) * 1000;
+        read_timeout.tv_sec = sec; 
+        read_timeout.tv_usec = usec;
+        setsockopt(m_sockfd, SOL_SOCKET, SO_RCVTIMEO, &read_timeout, sizeof read_timeout);
+    }
     return 0;
 }
 
